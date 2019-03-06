@@ -53,7 +53,8 @@ ALLOWED_HOSTS = [
     # add localhost = 127.0.0.1
     'localhost',
     '127.0.0.1',
-    # 'amazonaws.com',
+    # .awazonaws.com으로 끝나는 모든 도메인 처리
+    '.amazonaws.com',
 ]
 
 
