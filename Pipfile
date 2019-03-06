@@ -9,6 +9,9 @@ verify_ssl = true
 django = "*"
 django-extensions = "*"
 pillow = "*"
+boto3 = "*"
+ipython = "*"
+django-storages = "*"
 
 [requires]
 python_version = "3.6"
