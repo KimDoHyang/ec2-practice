@@ -13,7 +13,7 @@ import json
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 ROOT_DIR = os.path.dirname(BASE_DIR)
 TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
 
@@ -25,6 +25,8 @@ TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
 SECRETS_DIR = os.path.join(ROOT_DIR, '.secrets')
 secrets = json.load(open(os.path.join(SECRETS_DIR, 'base.json')))
 SECRET_KEY = secrets['SECRET_KEY']
+
+# Static & Media Settings : DEBUG True 옵션으로 Django 서버에서 정적파일 처리 위한 설정(개발용)
 
 # Static DIR
 # Static files (CSS, JavaScript, Images)
@@ -47,7 +49,7 @@ MEDIA_ROOT = os.path.join(ROOT_DIR, '.media')
 AUTH_USER_MODEL = 'members.User'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# DEBUG = True > development.py, production.py로 분리 
 
 ALLOWED_HOSTS = [
     # add localhost = 127.0.0.1
@@ -101,18 +103,17 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'config.wsgi.application'
+# WSGI_APPLICATION = 'config.wsgi.application' > production/development.py 분리
 
 
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#     }
+# } > production/development.py 분리
 
 
 # Password validation

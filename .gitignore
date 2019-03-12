@@ -5,8 +5,9 @@
 ## secrets directory
 /.secrets
 
-## media directory(Store User-uploaded files)
+## Static & Media(Store User-uploaded files) ROOT
 /.media
+/.static
 
 
 ### Django ###

@@ -12,7 +12,7 @@ ENV LANG C.UTF-8
 
 # Docker 컨테이너 생성 및 실행 후 진행 할 터미널 명령어를 RUN
 # docker run -it /bin/bash에서 명령어 실행하는 것과 같은 원리
-# 기본적인 업데이트 실행
+# 패키지 업그레이드 실행
 # -y 옵션은 따로 터미널에서 Yes를 선택하지 않아도 자동으로 설치 진행하도록 설정
 RUN         apt -y update
 RUN         apt -y dist-upgrade
@@ -22,6 +22,10 @@ RUN         apt -y install python3-pip
 
 # install pipenv
 RUN         pip3 install pipenv
+
+# install Nginx, uWSGI(WebServer, WSGI(AppServer))
+RUN         pip3 -y install nginx
+RUN         pip3 install uwsgi
 
 # 현재 폴더(ec2-deploy)의 내부에 있는 모든 파일을 복사
 # 생성될 이미지의 /srv/project/에 붙여넣는다.
