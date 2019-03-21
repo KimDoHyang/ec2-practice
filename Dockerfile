@@ -1,4 +1,4 @@
-# docker build -t ec2-deploy -f Dockerfile .
+# sudo docker build -t ec2-deploy -f Dockerfile .
 
 # Docker 이미지 생성
 # ubuntu:18.04 version으로 생성
@@ -24,10 +24,10 @@ RUN         apt -y install python3-pip
 RUN         pip3 install pipenv
 
 # install Nginx, uWSGI(WebServer, WSGI(AppServer))
-RUN         pip3 -y install nginx
+RUN         apt -y install nginx
 RUN         pip3 install uwsgi
 
-# 현재 폴더(ec2-deploy)의 내부에 있는 모든 파일을 복사
+# 현재 실행 중인 호스트 폴더(ec2-deploy)의 내부에 있는 모든 파일을 복사
 # 생성될 이미지의 /srv/project/에 붙여넣는다.
 # 소스코드를 옮겨 Docker로 서버를 실행하기 위함이다.
 COPY        ./  /srv/project/
@@ -42,8 +42,32 @@ WORKDIR     /srv/project
 # You need to use --ignore-pipfile, so it won't mess with our setup
 RUN         pipenv install --system --deploy --ignore-pipfile
 
+# 분리한 settings 중 production 사용 설정(DEBUG=False)
+ENV         DJANGO_SETTINGS_MODULE  config.settings.production
+
+# 프로세스를 실행할 명령
 # runserver를 실행하기 위한 Directory 이동
 WORKDIR     /srv/project/app
 
+# collectstatic으로 정적파일 루트 정리
+# --noinput 은 -y 옵션과 유사한 기능을 하는 것
+RUN         python3 manage.py collectstatic --noinput
+
+# Nginx 설정
+# 기존에 존재하던 Nginx 설정파일(default) 삭제
+RUN         rm -rf  /etc/nginx/sites-available/*
+RUN         rm -rf  /etc/nginx/sites-enabled/*
+
+# 프로젝트 Nginx 설정파일 복사 및 enabled로 링크 설정
+# cp -f 옵션은 강제로 복붙한다는 것(덮어씌우기)
+# ln 은 링크 생성(바로가기)
+RUN         cp -f   /srv/project/.config/app.nginx \
+                    /etc/nginx/sites-available/
+RUN         ln -sf /etc/nginx/sites-available/app.nginx \
+                    /etc/nginx/sites-enabled/app.nginx
+
 # CMD는 마지막 순서로 1번만 실행될 수 있으며, 이후 Dockerfile로 다른 코드를 실행할 수 없다.
-CMD         python3 manage.py runserver 0:8000
+#CMD         python3 manage.py runserver 0:8000
+
+# uWSGI 실행
+CMD         uwsgi --http :8000 --chdir /srv/project/app --wsgi config.wsgi
