@@ -21,11 +21,16 @@ RUN         apt -y dist-upgrade
 RUN         apt -y install python3-pip
 
 # install pipenv
-RUN         pip3 install pipenv
+# RUN         pip3 install pipenv
 
 # install Nginx, uWSGI(WebServer, WSGI(AppServer))
 RUN         apt -y install nginx
 RUN         pip3 install uwsgi
+
+# requirements.txt파일만 복사 후, 패키지 설치
+# requirements.txt파일의 내용이 바뀌지 않으면 pip3 install ...부분이 재실행되지 않음
+COPY        requirements.txt /tmp/
+RUN         pip3 install -r /tmp/requirements.txt
 
 # 현재 실행 중인 호스트 폴더(ec2-deploy)의 내부에 있는 모든 파일을 복사
 # 생성될 이미지의 /srv/project/에 붙여넣는다.
@@ -40,7 +45,7 @@ WORKDIR     /srv/project
 # You need to use --system flag, so it will install all packages into the system python, and not into the virtualenv. Since docker containers do not need to have virtualenvs
 # You need to use --deploy flag, so your build will fail if your Pipfile.lock is out of date
 # You need to use --ignore-pipfile, so it won't mess with our setup
-RUN         pipenv install --system --deploy --ignore-pipfile
+#RUN         pipenv install --system --deploy --ignore-pipfile
 
 # 분리한 settings 중 production 사용 설정(DEBUG=False)
 ENV         DJANGO_SETTINGS_MODULE  config.settings.production
@@ -70,4 +75,7 @@ RUN         ln -sf /etc/nginx/sites-available/app.nginx \
 #CMD         python3 manage.py runserver 0:8000
 
 # uWSGI 실행
-CMD         uwsgi --http :8000 --chdir /srv/project/app --wsgi config.wsgi
+#CMD         uwsgi --http :8000 --chdir /srv/project/app --wsgi config.wsgi
+
+# EC2에 모든내용을 그대로 구현 (Docker없이)
+#  보안그룹 80번포트 개방해야 함

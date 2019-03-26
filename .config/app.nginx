@@ -1,11 +1,14 @@
 # /etc/nginx/sites-available/ 에 위치해야함
 # server {} 라고 선언하면 이것이 하나의 가상 서버가 된다.
+# sites-enabled, sites-available에 있는 default설정을 삭제한 후 연결.
+# 자동으로 해당 디렉토리에 만들어 둔 app.nginx 파일 및 링크에 있는 이 설정파일에 따라
+# Nginx가 작동한다.
 server {
     # 80번 포트로부터 받은 요청을 처리할 것이다.
     listen 80;
 
     # 도메인이 'localhost'에 해당할 때 요청을 처리한다.
-    server_name localhost;
+    server_name localhost *.amazonaws.com;
 
     # 인코딩 방식은 utf-8
     charset utf-8;
@@ -22,5 +25,15 @@ server {
         uwsgi_pass  unix:///tmp/app.sock;
         # uwsgi 관련 설정을 모두 가져오겠다
         include     uwsgi_params;
+    }
+
+    # Django까지 연결하지 않고, Static 및 Media 파일을 직접 연결하는 작업
+    # collectstatic으로 모은 .static, .media 파일과 /static/, /media/ URL을 다이렉트로 연결
+    location /static/ {
+        alias   /srv/project/.static/;
+    }
+
+    location /media/ {
+        alias   /srv/project/.media/;
     }
 }

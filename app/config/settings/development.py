@@ -4,9 +4,9 @@ DEBUG = True
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
+secrets = json.loads(open(os.path.join(SECRETS_DIR, 'development.json')))
+
+# .secrets의  development.json을 사용
+# SECRET_KEY는 이미 base.py에서 base.json으로 import 했으므로,
+# development.json에는 DATABASE 설정만 기록
+DATABASES = secrets['DATABASES']
